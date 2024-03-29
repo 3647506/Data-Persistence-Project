@@ -1,7 +1,10 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering;
+
+using System.IO;
 
 public class GameManager : MonoBehaviour
 {
@@ -50,12 +53,17 @@ public class GameManager : MonoBehaviour
 
         ResetPlayerScore();
 
+        LoadSavedScoreData();
+
         GlobalEventManager.OnGameOver += AddDataToScoreRating;
+        GlobalEventManager.OnGameOver += SaveScores;
 
     }
 
-    private void OnDestroy() {
+    private void OnDestroy()
+    {
         GlobalEventManager.OnGameOver -= AddDataToScoreRating;
+        GlobalEventManager.OnGameOver -= SaveScores;
     }
 
     public void SetPlayerName(string enteredName)
@@ -80,7 +88,7 @@ public class GameManager : MonoBehaviour
         {
             _thirdPlaceName = _secondPlaceName;
             ThirdPlaceScore = _secondPlaceScore;
-            
+
             _secondPlaceName = _firstPlaceName;
             _secondPlaceScore = _firstPlaceScore;
 
@@ -95,11 +103,67 @@ public class GameManager : MonoBehaviour
             _secondPlaceName = PlayerName;
             _secondPlaceScore = PlayerScore;
         }
-        else if (PlayerScore > PlayerScore)
+        else if (PlayerScore > _thirdPlaceScore)
         {
             _thirdPlaceName = PlayerName;
             ThirdPlaceScore = PlayerScore;
         }
 
+        // Debug.Log($"First  player Name {_firstPlaceName}, Score: {_firstPlaceScore}");
+        // Debug.Log($"Second  player Name {_secondPlaceName}, Score: {_secondPlaceScore}");
+        // Debug.Log($"third  player Name {_thirdPlaceName}, Score: {_thirdPlaceScore}");
+
+    }
+
+    [System.Serializable]
+    private class SaveScoreData
+    {
+        public string firstPlaceNameData;
+        public int firstPlaceScoreData;
+
+        public string secondPlaceNameData;
+        public int secondPlaceScoreData;
+
+        public string thirdPlaceNameData;
+        public int thirdPlaceScoreData;
+    }
+
+    public void SaveScores()
+    {
+        SaveScoreData data = new SaveScoreData();
+
+        data.firstPlaceNameData = FirstPlaceName;
+        data.firstPlaceScoreData = FirstPlaceScore;
+
+        data.secondPlaceNameData = SecondPlaceName;
+        data.secondPlaceScoreData = SecondPlaceScore;
+
+        data.thirdPlaceNameData = ThirdPlaceName;
+        data.thirdPlaceScoreData = ThirdPlaceScore;
+
+        string json = JsonUtility.ToJson(data);
+
+        File.WriteAllText(Application.persistentDataPath + "/savefile.json", json);
+    }
+
+    //[ContextMenu("Read From saved Jason file")]
+    public void LoadSavedScoreData()
+    {
+        string path = Application.persistentDataPath + "/savefile.json";
+        if (File.Exists(path))
+        {
+            string savedJson = File.ReadAllText(path);
+            Debug.Log($"Saved Jason file : {savedJson}");
+            SaveScoreData savedData = JsonUtility.FromJson<SaveScoreData>(savedJson);
+
+            FirstPlaceName = savedData.firstPlaceNameData;
+            FirstPlaceScore =savedData.firstPlaceScoreData;
+
+            SecondPlaceName = savedData.secondPlaceNameData;
+            SecondPlaceScore = savedData.secondPlaceScoreData;
+
+            ThirdPlaceName = savedData.thirdPlaceNameData;
+            ThirdPlaceScore = savedData.thirdPlaceScoreData;
+        }
     }
 }

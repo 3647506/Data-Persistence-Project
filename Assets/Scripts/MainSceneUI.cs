@@ -23,6 +23,9 @@ public class MainSceneUI : MonoBehaviour
     [SerializeField]
     private TMP_Text _currentScoreSituation;
 
+    [SerializeField]
+    private TMP_Text _bestScoreOnTopScreen;
+
     private void Awake()
     {
         GlobalEventManager.OnBlockDestroed += SetPlayerScoreText;
@@ -34,6 +37,11 @@ public class MainSceneUI : MonoBehaviour
         }
 
         _scoreTableGameObject.SetActive(false);
+
+        if (GameManager.Instance.FirstPlaceName != null && GameManager.Instance.FirstPlaceName != "")
+        {
+            _bestScoreOnTopScreen.text = "Best Score : " + GameManager.Instance.FirstPlaceName + " :" + GameManager.Instance.FirstPlaceScore;
+        }
     }
 
     private void OnDestroy()
@@ -51,25 +59,25 @@ public class MainSceneUI : MonoBehaviour
     {
         _scoreTableGameObject.SetActive(true);
 
-        if (GameManager.Instance.FirstPlaceName != null)
+        if (GameManager.Instance.FirstPlaceName != null && GameManager.Instance.FirstPlaceName != "")
         {
             _firstPlaceScoreText.gameObject.SetActive(true);
             _firstPlaceScoreText.text = GameManager.Instance.FirstPlaceName + " : " + GameManager.Instance.FirstPlaceScore;
         }
 
-        if (GameManager.Instance.SecondPlaceName != null)
+        if (GameManager.Instance.SecondPlaceName != null && GameManager.Instance.SecondPlaceName != "")
         {
             _secondPlaceScoreText.gameObject.SetActive(true);
             _secondPlaceScoreText.text = GameManager.Instance.SecondPlaceName + " : " + GameManager.Instance.SecondPlaceScore;
         }
 
-        if (GameManager.Instance.ThirdPlaceName != null)
+        if (GameManager.Instance.ThirdPlaceName != null && GameManager.Instance.ThirdPlaceName != "")
         {
-            _thirdPlaceScoreText.gameObject.SetActive(false);
+            _thirdPlaceScoreText.gameObject.SetActive(true);
             _thirdPlaceScoreText.text = GameManager.Instance.ThirdPlaceName + " : " + GameManager.Instance.ThirdPlaceScore;
         }
 
-        _currentScoreSituation.text = "Your score: "+GameManager.Instance.PlayerScore;
+        _currentScoreSituation.text = "Your score: " + GameManager.Instance.PlayerScore;
 
     }
 

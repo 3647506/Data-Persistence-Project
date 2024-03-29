@@ -32,16 +32,15 @@ public class StartMenuUIHandler : MonoBehaviour
 
     private void ShowEnteredName()
     {
-        if (EnteredName.gameObject.activeSelf == false)
-        {
-            EnteredName.gameObject.SetActive(true);
-        }
-        EnteredName.text = "Welcome "+_inputName+"!";
+        EnteredName.text = "Welcome " + _inputName + "!";
     }
 
     public void StartGame()
     {
-        SceneManager.LoadScene(1);
+        if (GameManager.Instance.PlayerName != null && GameManager.Instance.PlayerName != "")
+        {
+            SceneManager.LoadScene(1);
+        }
     }
 
     public void QuitGane()
